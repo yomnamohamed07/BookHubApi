@@ -15,14 +15,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="Controllers\" />
-    <Folder Include="MiddleWares\" />
-    <Folder Include="Extenstions\" />
-    <Folder Include="Helper\" />
-    <Folder Include="Errors\" />
-  </ItemGroup>
-
-  <ItemGroup>
     <ProjectReference Include="..\BookHub.Services\BookHub.Services.csproj" />
   </ItemGroup>
 

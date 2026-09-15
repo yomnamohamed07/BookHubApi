@@ -1,5 +1,6 @@
 using BookHub.Infrastructure.Data;
 using BookHub.Infrastructure.Data.DataSeeding;
+using BookHubApi.Extenstions;
 using Microsoft.EntityFrameworkCore;
 
 namespace BookHubApi
@@ -13,9 +14,10 @@ namespace BookHubApi
             // Add services to the container.
 
             builder.Services.AddControllers();
-
             builder.Services.AddEndpointsApiExplorer();
             builder.Services.AddSwaggerGen();
+
+            builder.Services.AddApplicationService(builder.Configuration);
 
             builder.Services.AddDbContext<BookHubDbContext>(options =>
             {
@@ -24,7 +26,16 @@ namespace BookHubApi
 
                 options.EnableSensitiveDataLogging();
             });
-
+            builder.Services.AddCors(options =>
+            {
+                options.AddPolicy("AllowFrontend", policy =>
+                {
+                    policy
+                        .AllowAnyOrigin()
+                        .AllowAnyHeader()
+                        .AllowAnyMethod();
+                });
+            });
             var app = builder.Build();
 
             // Database Migration & Data Seeding

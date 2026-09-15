@@ -1,37 +1,37 @@
 [
   {
-    "title": "Clean Code",
-    "author": "Robert C. Martin",
-    "isbn": "9780132350884",
-    "category": "Programming",
-    "availableCopies": 5
+    "Title": "Clean Code",
+    "Author": "Robert C. Martin",
+    "ISBN": "9780132350884",
+    "Category": "Programming",
+    "AvailableCopies": 5
   },
   {
-    "title": "Clean Architecture",
-    "author": "Robert C. Martin",
-    "isbn": "9780134494166",
-    "category": "Software Engineering",
-    "availableCopies": 4
+    "Title": "Clean Architecture",
+    "Author": "Robert C. Martin",
+    "ISBN": "9780134494166",
+    "Category": "Software Engineering",
+    "AvailableCopies": 4
   },
   {
-    "title": "The Pragmatic Programmer",
-    "author": "Andrew Hunt",
-    "isbn": "9780135957059",
-    "category": "Programming",
-    "availableCopies": 7
+    "Title": "The Pragmatic Programmer",
+    "Author": "Andrew Hunt",
+    "ISBN": "9780135957059",
+    "Category": "Programming",
+    "AvailableCopies": 7
   },
   {
-    "title": "Design Patterns",
-    "author": "Erich Gamma",
-    "isbn": "9780201633610",
-    "category": "Software Engineering",
-    "availableCopies": 3
+    "Title": "Design Patterns",
+    "Author": "Erich Gamma",
+    "ISBN": "9780201633610",
+    "Category": "Software Engineering",
+    "AvailableCopies": 3
   },
   {
-    "title": "Introduction to Algorithms",
-    "author": "Thomas H. Cormen",
-    "isbn": "9780262046305",
-    "category": "Algorithms",
-    "availableCopies": 6
+    "Title": "Introduction to Algorithms",
+    "Author": "Thomas H. Cormen",
+    "ISBN": "9780262046305",
+    "Category": "Algorithms",
+    "AvailableCopies": 6
   }
 ]

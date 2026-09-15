@@ -11,6 +11,7 @@ namespace BookHub.Data.Entities
             public string ISBN { get; set; }
             public string Category { get; set; }
             public int AvailableCopies { get; set; }
-        }
+            public  bool  IsDeleted { get; set; } = false;
     }
+}
 
