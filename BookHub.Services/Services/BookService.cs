@@ -1,11 +1,14 @@
-﻿
-using AutoMapper;
+﻿using AutoMapper;
 using BookHub.Data.Entities;
 using BookHub.Data.Helper;
 using BookHub.Data.MappingProfiles.Inputs;
+using BookHub.Data.MappingProfiles.Inputs.BookHub.Data.MappingProfiles.Outputs;
 using BookHub.Data.MappingProfiles.Outputs;
+using BookHub.Data.MappingProfiles.Outputs.BookHub.Data.MappingProfiles.Inputs;
 using BookHub.Data.Respositories;
 using BookHub.Data.Services;
+using BookHub.Services.Exceptions;
+
 
 namespace BookHub.Services.Services
 {
@@ -24,20 +27,10 @@ namespace BookHub.Services.Services
 
         public async Task<BookShowDto> CreateBookAsync(AddBookDto dto)
         {
-            if (string.IsNullOrWhiteSpace(dto.Title))
-                throw new Exception("Title is required");
+            var existingBook = await _bookRepository.GetByIsbnAsync(dto.ISBN);
 
-            if (string.IsNullOrWhiteSpace(dto.Author))
-                throw new Exception("Author is required");
-
-            if (string.IsNullOrWhiteSpace(dto.ISBN))
-                throw new Exception("ISBN is required");
-
-            if (string.IsNullOrWhiteSpace(dto.Category))
-                throw new Exception("Category is required");
-
-            if (dto.AvailableCopies < 0)
-                throw new Exception("Available Copies cannot be negative");
+            if (existingBook != null)
+                throw new BadRequestException($"A book with ISBN '{dto.ISBN}' already exists");
 
             var book = _mapper.Map<Book>(dto);
 
@@ -53,22 +46,12 @@ namespace BookHub.Services.Services
             var book = await _bookRepository.GetByIdAsync(dto.Id);
 
             if (book == null)
-                throw new Exception("Book not found");
+                throw new NotFoundException("Book not found");
 
-            if (string.IsNullOrWhiteSpace(dto.Title))
-                throw new Exception("Title is required");
+            var existingBook = await _bookRepository.GetByIsbnAsync(dto.ISBN);
 
-            if (string.IsNullOrWhiteSpace(dto.Author))
-                throw new Exception("Author is required");
-
-            if (string.IsNullOrWhiteSpace(dto.ISBN))
-                throw new Exception("ISBN is required");
-
-            if (string.IsNullOrWhiteSpace(dto.Category))
-                throw new Exception("Category is required");
-
-            if (dto.AvailableCopies < 0)
-                throw new Exception("Available Copies cannot be negative");
+            if (existingBook != null && existingBook.Id != dto.Id)
+                throw new BadRequestException($"Another book with ISBN '{dto.ISBN}' already exists");
 
             _mapper.Map(dto, book);
 
@@ -82,7 +65,7 @@ namespace BookHub.Services.Services
             var book = await _bookRepository.GetByIdAsync(id);
 
             if (book == null)
-                throw new Exception("Book not found");
+                throw new NotFoundException("Book not found");
 
             await _bookRepository.DeleteAsync(book);
 
@@ -94,7 +77,7 @@ namespace BookHub.Services.Services
             var book = await _bookRepository.GetByIdAsync(id);
 
             if (book == null)
-                throw new Exception("Book not found");
+                throw new NotFoundException("Book not found");
 
             return _mapper.Map<BookShowDto>(book);
         }
@@ -117,4 +100,3 @@ namespace BookHub.Services.Services
         }
     }
 }
- 

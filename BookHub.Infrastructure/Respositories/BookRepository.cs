@@ -67,5 +67,11 @@ namespace BookHub.Infrastructure.Respositories
 
             await _context.SaveChangesAsync();
         }
+
+        public async Task<Book?> GetByIsbnAsync(string isbn)
+        {
+            return await _context.Books
+                .FirstOrDefaultAsync(b => b.ISBN == isbn && !b.IsDeleted);
+        }
     }
 }

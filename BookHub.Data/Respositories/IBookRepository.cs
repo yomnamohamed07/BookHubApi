@@ -17,5 +17,7 @@ namespace BookHub.Data.Respositories
         Task UpdateAsync(Book book);
 
         Task DeleteAsync(Book book);
+
+        Task<Book?> GetByIsbnAsync(string isbn);
     }
 }

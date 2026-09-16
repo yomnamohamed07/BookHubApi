@@ -1,6 +1,9 @@
-using BookHub.Infrastructure.Data;
+﻿using BookHub.Infrastructure.Data;
 using BookHub.Infrastructure.Data.DataSeeding;
+using BookHubApi.Errors;
 using BookHubApi.Extenstions;
+using BookHubApi.MiddleWares;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
 namespace BookHubApi
@@ -14,6 +17,23 @@ namespace BookHubApi
             // Add services to the container.
 
             builder.Services.AddControllers();
+
+            // Custom response shape for automatic Model Validation (Data Annotations)
+            builder.Services.Configure<ApiBehaviorOptions>(options =>
+            {
+                options.InvalidModelStateResponseFactory = actionContext =>
+                {
+                    var errors = actionContext.ModelState
+                        .Where(e => e.Value?.Errors.Count > 0)
+                        .SelectMany(e => e.Value!.Errors)
+                        .Select(e => e.ErrorMessage);
+
+                    var response = new InvalidBadRequestResponse(errors);
+
+                    return new BadRequestObjectResult(response);
+                };
+            });
+
             builder.Services.AddEndpointsApiExplorer();
             builder.Services.AddSwaggerGen();
 
@@ -26,6 +46,7 @@ namespace BookHubApi
 
                 options.EnableSensitiveDataLogging();
             });
+
             builder.Services.AddCors(options =>
             {
                 options.AddPolicy("AllowFrontend", policy =>
@@ -36,6 +57,7 @@ namespace BookHubApi
                         .AllowAnyMethod();
                 });
             });
+
             var app = builder.Build();
 
             // Database Migration & Data Seeding
@@ -46,8 +68,7 @@ namespace BookHubApi
 
                 try
                 {
-                    var dbcontext =
-                        services.GetRequiredService<BookHubDbContext>();
+                    var dbcontext = services.GetRequiredService<BookHubDbContext>();
 
                     await dbcontext.Database.MigrateAsync();
 
@@ -57,13 +78,13 @@ namespace BookHubApi
                 {
                     var logger = loggerFactory.CreateLogger<Program>();
 
-                    logger.LogError(
-                        ex,
-                        "Error occurred during startup seeding");
+                    logger.LogError(ex, "Error occurred during startup seeding");
                 }
             }
 
             // Configure the HTTP request pipeline.
+
+            app.UseMiddleware<ExceptionMiddleWare>();
 
             if (app.Environment.IsDevelopment())
             {
@@ -71,6 +92,7 @@ namespace BookHubApi
                 app.UseSwaggerUI();
             }
 
+            app.UseCors("AllowFrontend");
             app.UseHttpsRedirection();
 
             app.UseAuthorization();

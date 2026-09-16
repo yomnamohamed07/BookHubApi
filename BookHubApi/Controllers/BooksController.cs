@@ -1,7 +1,9 @@
 ﻿using BookHub.Data.MappingProfiles.Inputs;
 using BookHub.Data.MappingProfiles.Outputs;
+using BookHub.Data.MappingProfiles.Outputs.BookHub.Data.MappingProfiles.Inputs;
 using BookHub.Data.Services;
-using Microsoft.AspNetCore.Http;
+using BookHub.Services.Exceptions;
+using BookHubApi.Errors;
 using Microsoft.AspNetCore.Mvc;
 
 namespace BookHubApi.Controllers
@@ -18,23 +20,18 @@ namespace BookHubApi.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> CreateBook(
-            [FromBody] AddBookDto dto)
+        public async Task<IActionResult> CreateBook([FromBody] AddBookDto dto)
         {
-            if (dto == null)
-                return BadRequest("Data is required");
-
             var result = await _bookService.CreateBookAsync(dto);
 
-            return Ok(result);
+            return CreatedAtAction(nameof(GetBookById), new { id = result.Id }, result);
         }
 
-        [HttpPut]
-        public async Task<IActionResult> UpdateBook(
-            [FromBody] UpdateBookDto dto)
+        [HttpPut("{id}")]
+        public async Task<IActionResult> UpdateBook(int id, [FromBody] UpdateBookDto dto)
         {
-            if (dto == null)
-                return BadRequest("Data is required");
+            if (id != dto.Id)
+                throw new BadRequestException("Route id does not match body id");
 
             var result = await _bookService.UpdateBookAsync(dto);
 
@@ -44,10 +41,7 @@ namespace BookHubApi.Controllers
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteBook(int id)
         {
-            var result = await _bookService.DeleteBookAsync(id);
-
-            if (!result)
-                return NotFound("Book not found");
+            await _bookService.DeleteBookAsync(id);
 
             return Ok("Book deleted successfully");
         }
@@ -57,9 +51,6 @@ namespace BookHubApi.Controllers
         {
             var result = await _bookService.GetBookByIdAsync(id);
 
-            if (result == null)
-                return NotFound("Book not found");
-
             return Ok(result);
         }
 
@@ -68,9 +59,7 @@ namespace BookHubApi.Controllers
             int pageIndex = 1,
             int pageSize = 10)
         {
-            var result = await _bookService.GetAllBooksAsync(
-                pageIndex,
-                pageSize);
+            var result = await _bookService.GetAllBooksAsync(pageIndex, pageSize);
 
             return Ok(result);
         }

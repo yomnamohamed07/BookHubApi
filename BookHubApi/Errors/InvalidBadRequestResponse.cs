@@ -3,9 +3,9 @@
     public class InvalidBadRequestResponse : ErrorResponse
     {
         public IEnumerable<string> Errors { get; set; }
-        public InvalidBadRequestResponse() : base(400)
+        public InvalidBadRequestResponse(IEnumerable<string> errors) : base(400)
         {
-            Errors = new List<string>();
+            Errors = errors;
         }
     }
 }

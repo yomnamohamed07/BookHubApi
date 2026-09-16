@@ -1,6 +1,8 @@
 ﻿using BookHub.Data.Helper;
 using BookHub.Data.MappingProfiles.Inputs;
+using BookHub.Data.MappingProfiles.Inputs.BookHub.Data.MappingProfiles.Outputs;
 using BookHub.Data.MappingProfiles.Outputs;
+using BookHub.Data.MappingProfiles.Outputs.BookHub.Data.MappingProfiles.Inputs;
 
 
 namespace BookHub.Data.Services
