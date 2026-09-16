@@ -1,114 +1,123 @@
-# 📚 BookHub API
+# BookHub API — Backend
 
-A RESTful Web API built with **ASP.NET Core** for managing a bookstore's book inventory.
+A RESTful **ASP.NET Core Web API** for managing a bookstore's book catalog.
 
-The API provides complete **CRUD operations** for books, including creating, retrieving, updating, and deleting book records. It is designed with a clean and maintainable backend structure and can be consumed by any frontend application such as Angular.
+The API provides CRUD operations for books, request validation, duplicate ISBN handling, pagination, database persistence, and Swagger/OpenAPI documentation.
 
----
+![.NET](https://img.shields.io/badge/.NET-8-512BD4?logo=dotnet\&logoColor=white)
+![C#](https://img.shields.io/badge/C%23-12-239120?logo=csharp\&logoColor=white)
+![Entity Framework Core](https://img.shields.io/badge/Entity%20Framework%20Core-8-512BD4?logo=dotnet\&logoColor=white)
+![SQL Server](https://img.shields.io/badge/SQL%20Server-Database-CC2927?logo=microsoftsqlserver\&logoColor=white)
+![Swagger](https://img.shields.io/badge/Swagger-OpenAPI-85EA2D?logo=swagger\&logoColor=black)
 
-## 🚀 Features
+## Overview
 
-* 📖 Create a new book
-* 🔍 Retrieve all books
-* 🔎 Retrieve a book by ID
-* ✏️ Update book details
-* 🗑️ Delete a book
-* ✅ Input validation
-* 🗄️ Entity Framework Core integration
-* 🌐 RESTful API architecture
-* 📑 Swagger/OpenAPI documentation
-* 🧩 Layered project structure
-* 🌱 Database seeding with initial book data
+BookHub API is the backend service for a bookstore management application.
 
----
+It exposes RESTful endpoints that allow clients to:
 
-## 🛠️ Technologies
+* Retrieve the book catalog.
+* Retrieve a specific book.
+* Add new books.
+* Update existing books.
+* Delete books.
 
-* **C#**
-* **ASP.NET Core Web API**
-* **Entity Framework Core**
-* **SQL Server**
-* **LINQ**
-* **REST APIs**
-* **Swagger / OpenAPI**
-* **Dependency Injection**
-* **Git & GitHub**
+The API uses **Entity Framework Core** for database access and **SQL Server** for persistence.
 
----
+It is designed to work with the accompanying Angular frontend, but can also be tested independently using Swagger or Postman.
 
-## 🏗️ Project Structure
+## Features
 
-The solution is organized into separate projects to keep responsibilities clear and maintainable:
+* RESTful CRUD operations.
+* Book catalog pagination.
+* Request validation.
+* Duplicate ISBN validation.
+* Proper HTTP status codes.
+* Entity Framework Core integration.
+* SQL Server database.
+* Database migrations.
+* Initial data seeding.
+* Dependency Injection.
+* Swagger/OpenAPI documentation.
+* Layered project structure.
+* Separation of API, business logic, and infrastructure concerns.
+
+## Tech Stack
+
+* ASP.NET Core Web API
+* C#
+* Entity Framework Core
+* SQL Server
+* LINQ
+* REST APIs
+* Swagger / OpenAPI
+* Dependency Injection
+
+## Project Structure
 
 ```text
-BookHubApi
+BookHubApi/
 │
-├── BookHub.Data
-│   └── Data models, DTOs and application contracts
+├── BookHub.Data/
+│   └── Models, DTOs and data-related contracts
 │
-├── BookHub.Infrastructure
-│   └── Database configuration, EF Core
-│       repositories and data seeding
+├── BookHub.Infrastructure/
+│   └── Database access, EF Core, repositories and seeding
 │
-├── BookHub.Services
+├── BookHub.Services/
 │   └── Business logic and service implementations
 │
-├── BookHubApi
-│   └── API layer, controllers and application configuration
+├── BookHubApi/
+│   └── Controllers and API configuration
 │
 └── BookHubApi.sln
 ```
 
-### 🔹 BookHub.Data
+### Data Layer
 
-Contains the application's core data-related models and DTOs used to transfer data between the API and clients.
+Contains the application's data models and DTOs used to represent and transfer book information.
 
-### 🔹 BookHub.Infrastructure
+### Infrastructure Layer
 
-Responsible for database-related concerns such as:
+Responsible for database and infrastructure concerns, including:
 
 * Entity Framework Core
-* DbContext configuration
-* Database access
+* DbContext
+* Database configuration
+* Repository implementations
 * Data seeding
-* Infrastructure implementations
+* Database persistence
 
-### 🔹 BookHub.Services
+### Services Layer
 
-Contains the application's business logic and service layer.
+Contains the business logic used by the API.
 
-This layer keeps business operations separated from controllers and infrastructure concerns.
+Keeping business logic in the service layer prevents controllers from becoming responsible for database and business operations.
 
-### 🔹 BookHubApi
+### API Layer
 
-The main ASP.NET Core Web API project.
-
-It contains:
+Contains the HTTP-facing part of the application, including:
 
 * Controllers
-* API configuration
-* Dependency Injection setup
+* Dependency Injection configuration
 * Middleware configuration
 * Swagger configuration
+* Application startup
 
----
+## Book Model
 
-## 📖 Book Model
-
-Each book contains the following information:
+Each book contains:
 
 | Property          | Type     | Description                        |
 | ----------------- | -------- | ---------------------------------- |
-| `Id`              | `int`    | Unique identifier                  |
-| `Title`           | `string` | Book title                         |
-| `Author`          | `string` | Book author                        |
-| `ISBN`            | `string` | International Standard Book Number |
-| `Category`        | `string` | Book category                      |
-| `AvailableCopies` | `int`    | Number of available copies         |
+| `id`              | `int`    | Unique book identifier             |
+| `title`           | `string` | Book title                         |
+| `author`          | `string` | Book author                        |
+| `isbn`            | `string` | International Standard Book Number |
+| `category`        | `string` | Book category                      |
+| `availableCopies` | `int`    | Number of available copies         |
 
----
-
-## 🔗 API Endpoints
+## API Endpoints
 
 ### Get All Books
 
@@ -116,7 +125,13 @@ Each book contains the following information:
 GET /api/books
 ```
 
-Returns a paginated list of books.
+Returns the books using pagination.
+
+Example:
+
+```http
+GET /api/books?pageIndex=1&pageSize=10
+```
 
 Example response:
 
@@ -127,7 +142,7 @@ Example response:
   "count": 4,
   "data": [
     {
-      "id": 1,
+      "id": 7,
       "title": "Clean Architecture",
       "author": "Robert C. Martin",
       "isbn": "9780134494166",
@@ -138,31 +153,27 @@ Example response:
 }
 ```
 
----
-
 ### Get Book By ID
 
 ```http
 GET /api/books/{id}
 ```
 
-Returns the details of a specific book.
-
 Example:
 
 ```http
-GET /api/books/1
+GET /api/books/7
 ```
 
----
+Returns the requested book when it exists.
 
-### Add a New Book
+### Add a Book
 
 ```http
 POST /api/books
 ```
 
-Request body:
+Example request:
 
 ```json
 {
@@ -174,21 +185,19 @@ Request body:
 }
 ```
 
----
-
 ### Update a Book
 
 ```http
 PUT /api/books/{id}
 ```
 
-Example request:
+Example:
 
 ```http
-PUT /api/books/1
+PUT /api/books/7
 ```
 
-Request body:
+Example request:
 
 ```json
 {
@@ -200,8 +209,6 @@ Request body:
 }
 ```
 
----
-
 ### Delete a Book
 
 ```http
@@ -211,50 +218,87 @@ DELETE /api/books/{id}
 Example:
 
 ```http
-DELETE /api/books/1
+DELETE /api/books/7
 ```
 
----
+## Validation
 
-## 🧪 API Testing
+The API performs server-side validation to protect data integrity even when requests do not come from the Angular frontend.
 
-The API can be tested using:
+Validation includes:
 
-* Swagger UI
-* Postman
-* Angular frontend
-* Any HTTP client
+* Required title.
+* Required author.
+* Required ISBN.
+* Required category.
+* Non-negative available copies.
+* Unique ISBN.
 
-After running the application, open:
+Server-side validation ensures that invalid data cannot bypass the frontend and be stored directly in the database.
 
-```text
-https://localhost:<port>/swagger
-```
+## Duplicate ISBN
 
-Swagger provides an interactive interface for exploring and testing all available endpoints.
+ISBN values must be unique.
 
----
+If a request attempts to create or update a book using an existing ISBN, the API returns a validation/business error instead of creating a duplicate record.
 
-## ⚙️ Getting Started
+The Angular frontend reads this server response and displays the ISBN error directly below the ISBN field.
 
-### 1. Clone the Repository
+## HTTP Status Codes
+
+| Status Code                 | Usage                               |
+| --------------------------- | ----------------------------------- |
+| `200 OK`                    | Request completed successfully      |
+| `201 Created`               | Book created successfully           |
+| `204 No Content`            | Delete completed successfully       |
+| `400 Bad Request`           | Invalid request or validation error |
+| `404 Not Found`             | Book does not exist                 |
+| `500 Internal Server Error` | Unexpected server error             |
+
+## Database
+
+The application uses:
+
+* **SQL Server** as the database.
+* **Entity Framework Core** as the ORM.
+
+Entity Framework Core handles:
+
+* Database communication
+* Entity mapping
+* CRUD operations
+* Migrations
+* Database initialization
+
+The project also contains data seeding for initial book records.
+
+## Getting Started
+
+### Requirements
+
+* .NET SDK
+* SQL Server
+* Visual Studio / VS Code or another compatible IDE
+* Entity Framework Core CLI
+
+### Clone the Repository
 
 ```bash
 git clone https://github.com/yomnamohamed07/BookHubApi.git
 ```
 
-### 2. Navigate to the Project
+### Navigate to the Project
 
 ```bash
 cd BookHubApi
 ```
 
-### 3. Configure the Database
+### Configure the Database
 
 Update the connection string in:
 
 ```text
-appsettings.json
+BookHubApi/appsettings.json
 ```
 
 Example:
@@ -267,119 +311,173 @@ Example:
 }
 ```
 
-> Update the connection string according to your local SQL Server configuration.
+Use the appropriate SQL Server connection string for your environment.
 
-### 4. Apply Database Migrations
-
-Run:
+### Apply Migrations
 
 ```bash
 dotnet ef database update
 ```
 
-### 5. Run the Application
+If the Entity Framework CLI is not installed:
+
+```bash
+dotnet tool install --global dotnet-ef
+```
+
+### Run the API
 
 ```bash
 dotnet run
 ```
 
-The API will start on the configured HTTP/HTTPS ports.
+The API will start using the HTTP/HTTPS URLs configured by ASP.NET Core.
 
-### 6. Open Swagger
+## Swagger
 
-Navigate to:
+Swagger/OpenAPI is included for API documentation and testing.
+
+After starting the API, open:
 
 ```text
 https://localhost:<port>/swagger
 ```
 
----
+Swagger can be used to:
 
-## 🗄️ Database
+* Explore all endpoints.
+* Inspect request and response models.
+* Test CRUD operations.
+* Test validation behavior.
+* Test different HTTP responses.
 
-The project uses **SQL Server** with **Entity Framework Core**.
+## Testing
 
-Entity Framework Core is responsible for:
+The API can be tested using:
 
-* Database communication
-* Entity mapping
-* Migrations
-* CRUD operations
-* Database initialization
+* Swagger UI
+* Postman
+* Angular frontend
+* Any REST client
 
-The application also includes initial data seeding to provide sample books when the database is initialized.
-
----
-
-## 🔄 Application Flow
+For local frontend integration, the Angular development server normally runs on:
 
 ```text
-Client / Angular
-       │
-       ▼
-   Controllers
-       │
-       ▼
-    Services
-       │
-       ▼
- Infrastructure
-       │
-       ▼
- Entity Framework Core
-       │
-       ▼
-    SQL Server
+http://localhost:4200
 ```
 
-This separation keeps the API organized and makes the application easier to maintain, test, and extend.
+## CORS
 
----
+When the Angular frontend and API run on different origins, the API must allow the frontend origin.
 
-## 🎯 Assessment Requirements
+Example:
 
-This project implements the main requirements of the bookstore management assessment:
+```csharp
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("AllowFrontend", policy =>
+    {
+        policy
+            .WithOrigins("http://localhost:4200")
+            .AllowAnyHeader()
+            .AllowAnyMethod();
+    });
+});
+```
+
+The policy should then be enabled in the middleware pipeline:
+
+```csharp
+app.UseCors("AllowFrontend");
+```
+
+The exact CORS configuration may differ depending on the deployment environment.
+
+## Frontend Integration
+
+The API is consumed by the **The Shelf — Bookhub Frontend**, built with Angular 17.
+
+The frontend uses the following endpoints:
+
+| Method   | Route             | Purpose           |
+| -------- | ----------------- | ----------------- |
+| `GET`    | `/api/books`      | Retrieve books    |
+| `GET`    | `/api/books/{id}` | Retrieve one book |
+| `POST`   | `/api/books`      | Create a book     |
+| `PUT`    | `/api/books/{id}` | Update a book     |
+| `DELETE` | `/api/books/{id}` | Delete a book     |
+
+The frontend performs client-side validation for a better user experience, while the backend performs server-side validation to maintain data integrity.
+
+## Application Flow
+
+```text
+┌─────────────────────┐
+│   Angular Frontend  │
+└──────────┬──────────┘
+           │ HTTP
+           ▼
+┌─────────────────────┐
+│      Controllers    │
+└──────────┬──────────┘
+           ▼
+┌─────────────────────┐
+│       Services      │
+└──────────┬──────────┘
+           ▼
+┌─────────────────────┐
+│    Infrastructure   │
+└──────────┬──────────┘
+           ▼
+┌─────────────────────┐
+│ Entity Framework    │
+│        Core         │
+└──────────┬──────────┘
+           ▼
+┌─────────────────────┐
+│      SQL Server     │
+└─────────────────────┘
+```
+
+## Assessment Requirements
+
+The backend implements the required bookstore functionality:
 
 * [x] Add a new book
-* [x] Retrieve books
-* [x] Retrieve a book by ID
 * [x] Update book details
 * [x] Delete a book
-* [x] Store book information in a database
-* [x] Validate incoming data
-* [x] Expose RESTful endpoints
-* [x] Provide Swagger documentation
+* [x] Retrieve all books
+* [x] Retrieve a book by ID
+* [x] Store books in SQL Server
+* [x] Server-side validation
+* [x] Duplicate ISBN handling
+* [x] RESTful API endpoints
+* [x] Swagger/OpenAPI documentation
 
----
+## Future Improvements
 
-## 🔮 Possible Improvements
-
-Future improvements could include:
+Potential extensions include:
 
 * Authentication and authorization
 * Role-based access control
-* Advanced filtering and searching
-* Sorting and pagination enhancements
+* Advanced search and filtering
+* Unit and integration tests
 * Global exception handling
-* Automated unit and integration tests
-* Docker support
+* Structured logging
+* Docker containerization
 * CI/CD pipeline
-* Logging and monitoring
 
----
+## Related Project
 
-## 👩‍💻 Author
+**Frontend:** The Shelf — Bookhub Frontend
+
+The Angular application consumes the RESTful endpoints provided by this API.
+
+## Author
 
 **Yomna Mohamed Fathy**
 
 Computer Science Graduate | .NET Backend Developer
 
-### GitHub
+GitHub: [yomnamohamed07](https://github.com/yomnamohamed07)
 
-[github.com/yomnamohamed07](https://github.com/yomnamohamed07)
-
----
-
-## ⭐ Project
-
-If you find this project useful, feel free to explore the repository and check out the implementation.
